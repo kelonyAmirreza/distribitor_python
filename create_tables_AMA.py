@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 
 
-def main():
+def create_table_AMA():
     global conn, cursor, df
     conn = sqlite3.connect('database_AMA.db')
     cursor = conn.cursor()
@@ -122,9 +122,11 @@ def dati_rifornimento():
                     mezzo_id INTEGER NOT NULL,
                     sportello_id INTEGER NOT NULL,
                     distributore_id INTEGER NOT NULL,
+                    nominativo_id INTEGER NOT NULL,
                     FOREIGN KEY (mezzo_id) REFERENCES mezzi(id),
                     FOREIGN KEY (sportello_id) REFERENCES sportelli(id),
-                    FOREIGN KEY (distributore_id) REFERENCES distributori(id)
+                    FOREIGN KEY (distributore_id) REFERENCES distributori(id),
+                    FOREIGN KEY (nominativo_id) REFERENCES nominativi(id)
                     )''')
 
     for index, row in df.iterrows():
@@ -165,17 +167,21 @@ def dati_rifornimento():
         distributore_id = cursor.fetchone()[0]
 
         cursor.execute(
+            "SELECT id FROM nominativi WHERE nominativo = ?", (row['Nominativo'],))
+        nominativo_id = cursor.fetchone()[0]
+
+        cursor.execute(
             '''INSERT INTO dati_rifornimento (data_rifornimento, ora_rifornimento, data_registrazione,
             ricevuta, quantita_gasolio, quantita_ADBLUE, strumento, valore_contattore,
-            differenza_lettura_precedente, note, mezzo_id, sportello_id, distributore_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            differenza_lettura_precedente, note, mezzo_id, sportello_id, distributore_id, nominativo_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
             (data_rifornimento, row['Ora Rifornimento'],
              data_registrazione, str(row['Ricevuta/N° Modello']),
              row['Quantità Gasolio'], row['Quantità ADBLUE'],
              row['Strumento'], row['Valore CONTAKM/CONTAORE'],
              row['Differenza Lettura Precedente'], row['Note'],
-             mezzo_id, sportello_id, distributore_id))
+             mezzo_id, sportello_id, distributore_id, nominativo_id))
 
     conn.commit()
 
 
-main()
+create_table_AMA()

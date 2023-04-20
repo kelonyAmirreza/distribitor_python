@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 
 
-def main():
+def create_table_stradali():
     global conn, cursor, df
     conn = sqlite3.connect('database_stradali.db')
     cursor = conn.cursor()
@@ -154,10 +154,12 @@ def dati_rifornimento():
                     sportello_id INTEGER NOT NULL,
                     distributore_id INTEGER NOT NULL,
                     fuel_card_id INTEGER NOT NULL,
+                    nominativo_id INTEGER NOT NULL,
                     FOREIGN KEY (mezzo_id) REFERENCES mezzi(id),
                     FOREIGN KEY (sportello_id) REFERENCES sportelli(id),
                     FOREIGN KEY (distributore_id) REFERENCES distributori(id),
-                    FOREIGN KEY (fuel_card_id) REFERENCES fuel_cards(id)
+                    FOREIGN KEY (fuel_card_id) REFERENCES fuel_cards(id),
+                    FOREIGN KEY (nominativo_id) REFERENCES nominativi(id)
                     )''')
 
     for index, row in df.iterrows():
@@ -225,12 +227,16 @@ def dati_rifornimento():
             "SELECT id FROM fuel_cards WHERE fuel_card = ?", (row['FuelCard'],))
         fuel_card_id = cursor.fetchone()[0]
 
+        cursor.execute(
+            "SELECT id FROM nominativi WHERE nominativo = ?", (row['Nominativo'],))
+        nominativo_id = cursor.fetchone()[0]
+
         cursor.execute('''INSERT INTO dati_rifornimento (data_rifornimento, ora_rifornimento, data_registrazione, ricevuta,
         quantita_gasolio, importo_gasolio, quantita_benzina, importo_benzina, quantita_metano, importo_metano, quantita_GPL,
         importo_GPL, quantita_ADBLUE, importo_ADBLUE,
         strumento, valore_contattore, differenza_lettura_precedente, note,
-        mezzo_id, sportello_id, distributore_id, fuel_card_id) VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        mezzo_id, sportello_id, distributore_id, fuel_card_id, nominativo_id) VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                        (data_rifornimento, row['Ora Rifornimento'],
                         data_registrazione, str(
                            row['Ricevuta']),
@@ -241,9 +247,9 @@ def dati_rifornimento():
                            row['Quantità ADBLUE'], row['Importo ADBLUE €'],
                            row['Strumento'], row['Valore CONTAKM/CONTAORE'],
                            row['Differenza Lettura Precedente'], row['Note'],
-                           mezzo_id, sportello_id, distributore_id, fuel_card_id))
+                           mezzo_id, sportello_id, distributore_id, fuel_card_id, nominativo_id))
 
     conn.commit()
 
 
-main()
+create_table_stradali()
