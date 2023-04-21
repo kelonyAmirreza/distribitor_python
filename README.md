@@ -1,3 +1,9 @@
+# Run sql queries
+
+```
+cat sql_queries/average.sql | sqlite3 database_stradali.db
+```
+
 # Create tables each function:
 
 ## Function: `main()`
