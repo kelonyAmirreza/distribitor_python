@@ -1,8 +1,6 @@
-# Run sql queries
+# main
 
-```
-cat sql_queries/average.sql | sqlite3 database_stradali.db
-```
+This code will execute the sql queries and save the data in the output excel file in outpu_files folder
 
 # Create tables each function:
 
