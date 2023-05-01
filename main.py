@@ -24,6 +24,7 @@ def average_each_car_perday():
     data_AMA = pd.read_sql_query(
         '''
             SELECT AVG(dati.quantita_gasolio) AS avg_gasolio, AVG(dati.quantita_ADBLUE) AS avg_ADBLUE,
+                dati.valore_contattore, dati.differenza_lettura_precedente,
                 mezzi.descrizione_mezzo FROM dati_rifornimento AS dati
             JOIN mezzi ON dati.mezzo_id = mezzi.id
             GROUP BY dati.mezzo_id
